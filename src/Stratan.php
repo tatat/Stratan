@@ -1,6 +1,25 @@
 <?php
 
 class Stratan implements IteratorAggregate, ArrayAccess, Countable {
+  static public function create($array = array(), $json_options = 0) {
+    $empty = array();
+
+    $object = new static($empty, $json_options);
+    unset($empty);
+
+    $object->set_defaults($array);
+    
+    return $object;
+  }
+
+  static public function __callStatic($name, $args) {
+    if (preg_match('/^create_(array|object|json)$/', $name, $matches)) {
+      return call_user_func_array(array(__CLASS__, 'create'), $args)->{"to_{$matches[1]}"}();
+    } else {
+      trigger_error('Call to undefined method ' . __CLASS__ . "::{$name}()", E_USER_ERROR);
+    }
+  }
+
   protected $data = null;
 
   protected $separator = '.';

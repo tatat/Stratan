@@ -70,26 +70,26 @@ class StratanTest extends PHPUnit_Framework_TestCase {
 
     $object = new Stratan($array);
 
-    $this->assertEquals($object['default.value.is'], 'set');
+    $this->assertEquals('set', $object['default.value.is']);
 
     $array['default']['value']['is'] = 'changed';
 
-    $this->assertEquals($object['default.value.is'], 'changed');
+    $this->assertEquals('changed', $object['default.value.is']);
 
     $object['new.value.is'] = 'set';
 
-    $this->assertEquals($array['new']['value']['is'], 'set');
+    $this->assertEquals('set', $array['new']['value']['is']);
 
     $object['new.value.is'] = 'changed';
 
-    $this->assertEquals($array['new']['value']['is'], 'changed');
+    $this->assertEquals('changed', $array['new']['value']['is']);
 
     $part = $object['new'];
     $part->set('value.is', 'changed again');
 
-    $this->assertEquals($array['new']['value']['is'], 'changed again');
+    $this->assertEquals('changed again', $array['new']['value']['is']);
 
-    $result = array(
+    $expected = array(
       'default' => array(
         'value' => array(
           'is' => 'changed'
@@ -102,8 +102,8 @@ class StratanTest extends PHPUnit_Framework_TestCase {
       )
     );
 
-    $this->assertEquals($array, $result);
-    $this->assertEquals($object->to_array(), $result);
+    $this->assertEquals($expected, $array);
+    $this->assertEquals($expected, $object->to_array());
   }
 
   /**
@@ -126,17 +126,17 @@ class StratanTest extends PHPUnit_Framework_TestCase {
       )
     ));
 
-    $this->assertEquals($object->get('default.value1.is'), 'set');
-    $this->assertEquals($object['default.value2.is'], 'set');
-    $this->assertEquals($object->default->value3->is, 'set');
+    $this->assertEquals('set', $object->get('default.value1.is'));
+    $this->assertEquals('set', $object['default.value2.is']);
+    $this->assertEquals('set', $object->default->value3->is);
 
     $object->set('default.value1.is', 'changed');
     $object['default.value2.is'] = 'changed';
     $object->default->value3->is = 'changed';
 
-    $this->assertEquals($object->get('default.value1.is'), 'changed');
-    $this->assertEquals($object['default.value2.is'], 'changed');
-    $this->assertEquals($object->default->value3->is, 'changed');
+    $this->assertEquals('changed', $object->get('default.value1.is'));
+    $this->assertEquals('changed', $object['default.value2.is']);
+    $this->assertEquals('changed', $object->default->value3->is);
   }
 
   /**
@@ -158,8 +158,8 @@ class StratanTest extends PHPUnit_Framework_TestCase {
       'default.value2.is' => 'set'
     ));
 
-    $this->assertEquals($object->get('default.value1.is'), 'already set');
-    $this->assertEquals($object->get('default.value2.is'), 'set');
+    $this->assertEquals('already set', $object->get('default.value1.is'));
+    $this->assertEquals('set', $object->get('default.value2.is'));
   }
 
   /**
@@ -178,11 +178,11 @@ class StratanTest extends PHPUnit_Framework_TestCase {
 
     $object = new Stratan($other_object);
 
-    $this->assertEquals($object->get('default.value.is'), 'set');
+    $this->assertEquals('set', $object->get('default.value.is'));
 
     $object->set('new.value.is', 'set');
 
-    $this->assertEquals($other_object->get('new.value.is'), 'set');
+    $this->assertEquals('set', $other_object->get('new.value.is'));
   }
 
   /**
@@ -202,7 +202,7 @@ class StratanTest extends PHPUnit_Framework_TestCase {
     $object = new Stratan();
     $object->set($other_object);
 
-    $this->assertEquals($object->get('default.value.is'), 'set');
+    $this->assertEquals('set', $object->get('default.value.is'));
 
     $object->set('new.value.is', 'set');
 
@@ -214,6 +214,43 @@ class StratanTest extends PHPUnit_Framework_TestCase {
    */
   public function should_return_default_value() {
     $object = new Stratan();
-    $this->assertEquals($object->get('non-existent.key.is', 'not set'), 'not set');
+    $this->assertEquals('not set', $object->get('non-existent.key.is', 'not set'));
+  }
+
+  /**
+   * @test
+   */
+  public function should_create_instance() {
+    $object = Stratan::create(array(
+      'value.is' => 'set'
+    ));
+
+    $this->assertInstanceOf('Stratan', $object);
+    $this->assertEquals('set', $object['value.is']);
+  }
+
+  /**
+   * @test
+   */
+  public function should_create_array() {
+    $array = Stratan::create_array(array(
+      'value1.is' => 'set',
+      'value2.is' => 'set',
+      'value3.is' => 'set'
+    ));
+
+    $expected = array(
+      'value1' => array(
+        'is' => 'set'
+      ),
+      'value2' => array(
+        'is' => 'set'
+      ),
+      'value3' => array(
+        'is' => 'set'
+      )
+    );
+
+    $this->assertEquals($expected, $array);
   }
 }
