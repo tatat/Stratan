@@ -80,15 +80,15 @@ class Stratan implements IteratorAggregate, ArrayAccess, Countable {
   public function set($key, $value = null) {
     $class = __CLASS__;
 
-  	if (is_null($key)) {
+    if (is_null($key)) {
       $this->data[] = $value;
-  	} else if (is_array($key) || $key instanceof $class) {
+    } else if (is_array($key) || $key instanceof $class) {
       foreach ($key as $k => $v)
         $this->data[$k] = $v;
     } else {
       $parent =& $this->get_parent_array($key, $last_ns, true);
-	    $parent[$last_ns] = $value;
-  	}
+      $parent[$last_ns] = $value;
+    }
 
     return $this;
   }
