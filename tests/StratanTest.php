@@ -253,4 +253,29 @@ class StratanTest extends PHPUnit_Framework_TestCase {
 
     $this->assertEquals($expected, $array);
   }
+
+  /**
+   * @test
+   */
+  public function should_create_other_separator() {
+    $object = Stratan::create(array(
+      'value.1/is' => 'set',
+      'value.2/is' => 'set',
+      'value.3/is' => 'set'
+    ), '/');
+
+    $expected = array(
+      'value.1' => array(
+        'is' => 'set'
+      ),
+      'value.2' => array(
+        'is' => 'set'
+      ),
+      'value.3' => array(
+        'is' => 'set'
+      )
+    );
+
+    $this->assertEquals($expected, $object->to_array());
+  }
 }

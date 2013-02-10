@@ -1,14 +1,14 @@
 <?php
 
 class Stratan implements IteratorAggregate, ArrayAccess, Countable {
-  static public function create($array = array(), $json_options = 0) {
+  static public function create($array = array(), $separator = null, $json_options = 0) {
     $empty = array();
 
-    $object = new static($empty, $json_options);
+    $object = new static($empty, $separator, $json_options);
     unset($empty);
 
     $object->set_defaults($array);
-    
+
     return $object;
   }
 
@@ -26,12 +26,15 @@ class Stratan implements IteratorAggregate, ArrayAccess, Countable {
 
   protected $json_options = 0;
 
-  public function __construct(&$array = array(), $json_options = 0) {
+  public function __construct(&$array = array(), $separator = null, $json_options = 0) {
     if ($array instanceof Stratan) {
       $this->data =& $array->data();
     } else {
       $this->data =& $array;
     }
+
+    if (!is_null($separator))
+      $this->separator = $separator;
     
     $this->json_options = $json_options;
   }
@@ -78,7 +81,7 @@ class Stratan implements IteratorAggregate, ArrayAccess, Countable {
 
     if (!is_null($parent) && array_key_exists($last_ns, $parent)) {
       $class = __CLASS__;
-      return is_array($parent[$last_ns]) ? new $class($parent[$last_ns], $this->json_options) : $parent[$last_ns];
+      return is_array($parent[$last_ns]) ? new $class($parent[$last_ns], $this->separator, $this->json_options) : $parent[$last_ns];
     } else {
       return $default;
     }
