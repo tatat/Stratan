@@ -13,7 +13,7 @@ class StratanTest extends PHPUnit_Framework_TestCase {
   /**
    * @test
    */
-  public function shoud_set_and_get_value() {
+  public function should_set_and_get_value() {
     $object = new Stratan();
 
     $object->set('using Stratan::set()', true);
@@ -35,7 +35,7 @@ class StratanTest extends PHPUnit_Framework_TestCase {
   /**
    * @test
    */
-  public function shoud_set_and_get_value_with_sepalator() {
+  public function should_set_and_get_value_with_sepalator() {
     $object = new Stratan();
 
     $object->set('dot.separated.using Stratan::set()', true);
@@ -59,7 +59,7 @@ class StratanTest extends PHPUnit_Framework_TestCase {
   /**
    * @test
    */
-  public function array_shoud_be_reference() {
+  public function array_should_be_reference() {
     $array = array(
       'default' => array(
         'value' => array(
@@ -109,7 +109,7 @@ class StratanTest extends PHPUnit_Framework_TestCase {
   /**
    * @test
    */
-  public function shoud_access_several_ways() {
+  public function should_access_several_ways() {
     $object = new Stratan();
 
     $object->set(array(
@@ -142,7 +142,7 @@ class StratanTest extends PHPUnit_Framework_TestCase {
   /**
    * @test
    */
-  public function shoud_set_default_values() {
+  public function should_set_default_values() {
     $object = new Stratan();
 
     $object->set(array(
@@ -165,7 +165,7 @@ class StratanTest extends PHPUnit_Framework_TestCase {
   /**
    * @test
    */
-  public function shoud_new_with_instance() {
+  public function should_new_with_instance() {
     $other_object = new Stratan();
 
     $other_object->set(array(
@@ -188,7 +188,7 @@ class StratanTest extends PHPUnit_Framework_TestCase {
   /**
    * @test
    */
-  public function shoud_set_with_instance() {
+  public function should_set_with_instance() {
     $other_object = new Stratan();
 
     $other_object->set(array(
@@ -212,7 +212,7 @@ class StratanTest extends PHPUnit_Framework_TestCase {
   /**
    * @test
    */
-  public function shoud_return_default_value() {
+  public function should_return_default_value() {
     $object = new Stratan();
     $this->assertEquals($object->get('non-existent.key.is', 'not set'), 'not set');
   }
