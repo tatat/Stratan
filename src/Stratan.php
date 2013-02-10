@@ -76,11 +76,9 @@ class Stratan implements IteratorAggregate, ArrayAccess, Countable {
   }
 
   public function set($key, $value = null) {
-    $class = __CLASS__;
-
     if (is_null($key)) {
       $this->data[] = $value;
-    } else if (is_array($key) || $key instanceof $class) {
+    } else if (is_array($key) || $key instanceof Stratan) {
       foreach ($key as $k => $v)
         $this->data[$k] = $v;
     } else {
