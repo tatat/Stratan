@@ -8,9 +8,7 @@ class Stratan implements IteratorAggregate, ArrayAccess, Countable {
   protected $json_options = 0;
 
   public function __construct(&$array = array(), $json_options = 0) {
-    $class = __CLASS__;
-
-    if ($array instanceof $class) {
+    if ($array instanceof Stratan) {
       $this->data =& $array->data();
     } else {
       $this->data =& $array;
