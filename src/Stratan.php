@@ -98,28 +98,7 @@ class Stratan implements IteratorAggregate, ArrayAccess, Countable {
   }
 
   public function set($key, $value = null, $if_not_exist = false, $prefix = null) {
-    if (is_null($key)) {
-      $this->data[] = $value;
-    } else if (is_array($key) || $key instanceof Stratan) {
-      foreach ($key as $k => $v)
-        $this->set($k, $v, $if_not_exist, $prefix);
-    } else {
-      if (!is_null($prefix))
-        $key = $prefix . $this->separator . $key;
-
-      if (is_array($value) && count($value) > 0) {
-        $this->set($value, null, $if_not_exist, $key);
-      } else {
-        $parent =& $this->get_parent_array($key, $last_ns, true);
-
-        if ($if_not_exist && array_key_exists($last_ns, $parent))
-          return $this;
-
-        $parent[$last_ns] = $value;
-      }
-    }
-
-    return $this;
+    return $this->_set($key, $value, $if_not_exist);
   }
 
   public function set_default($key, $value = null) {
@@ -196,5 +175,30 @@ class Stratan implements IteratorAggregate, ArrayAccess, Countable {
       $array[$key] = is_array($value) ? $this->create_array_copy($value, $to_object) : $value;
 
     return $to_object ? (object) $array : $array;
+  }
+
+  protected function _set($key, $value = null, $if_not_exist = false, $prefix = null) {
+    if (is_null($key)) {
+      $this->data[] = $value;
+    } else if (is_array($key) || $key instanceof Stratan) {
+      foreach ($key as $k => $v)
+        $this->_set($k, $v, $if_not_exist, $prefix);
+    } else {
+      if (!is_null($prefix))
+        $key = $prefix . $this->separator . $key;
+
+      if (is_array($value) && count($value) > 0) {
+        $this->_set($value, null, $if_not_exist, $key);
+      } else {
+        $parent =& $this->get_parent_array($key, $last_ns, true);
+
+        if ($if_not_exist && array_key_exists($last_ns, $parent))
+          return $this;
+
+        $parent[$last_ns] = $value;
+      }
+    }
+
+    return $this;
   }
 }
