@@ -7,7 +7,7 @@ class Stratan implements IteratorAggregate, ArrayAccess, Countable {
     $object = new static($empty, $separator, $json_options);
     unset($empty);
 
-    $object->set_defaults($array);
+    $object->set($array);
 
     return $object;
   }
@@ -97,34 +97,37 @@ class Stratan implements IteratorAggregate, ArrayAccess, Countable {
     return true;
   }
 
-  public function set($key, $value = null) {
+  public function set($key, $value = null, $if_not_exist = false, $prefix = null) {
     if (is_null($key)) {
       $this->data[] = $value;
     } else if (is_array($key) || $key instanceof Stratan) {
       foreach ($key as $k => $v)
-        $this->data[$k] = $v;
+        $this->set($k, $v, $if_not_exist, $prefix);
     } else {
-      $parent =& $this->get_parent_array($key, $last_ns, true);
-      $parent[$last_ns] = $value;
+      if (!is_null($prefix))
+        $key = $prefix . $this->separator . $key;
+
+      if (is_array($value) && count($value) > 0) {
+        $this->set($value, null, $if_not_exist, $key);
+      } else {
+        $parent =& $this->get_parent_array($key, $last_ns, true);
+
+        if ($if_not_exist && array_key_exists($last_ns, $parent))
+          return $this;
+
+        $parent[$last_ns] = $value;
+      }
     }
 
     return $this;
   }
 
   public function set_default($key, $value) {
-    $parent =& $this->get_parent_array($key, $last_ns, true);
-
-    if (!array_key_exists($last_ns, $parent))
-      $parent[$last_ns] = $value;
-
-    return $this;
+    return $this->set($key, $value, true);
   }
 
   public function set_defaults(array $defaults) {
-    foreach ($defaults as $key => $value)
-      $this->set_default($key, $value);
-
-    return $this;
+    return $this->set($defaults, null, true);
   }
 
   public function delete($key) {

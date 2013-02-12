@@ -149,17 +149,24 @@ class StratanTest extends PHPUnit_Framework_TestCase {
       'default' => array(
         'value1' => array(
           'is' => 'already set'
+        ),
+        'value2' => array(
+          'is' => 'already set'
         )
       )
     ));
 
     $object->set_defaults(array(
       'default.value1.is' => 'set',
-      'default.value2.is' => 'set'
+      'default.value2' => array(
+        'is' => 'set'
+      ),
+      'default.value3.is' => 'set'
     ));
 
     $this->assertEquals('already set', $object->get('default.value1.is'));
-    $this->assertEquals('set', $object->get('default.value2.is'));
+    $this->assertEquals('already set', $object->get('default.value2.is'));
+    $this->assertEquals('set', $object->get('default.value3.is'));
   }
 
   /**
@@ -277,5 +284,90 @@ class StratanTest extends PHPUnit_Framework_TestCase {
     );
 
     $this->assertEquals($expected, $object->to_array());
+  }
+
+  /**
+   * @test
+   */
+  public function should_set_recursive() {
+    $empty_object = (object) array();
+
+    $value = array(
+      's1.s2' => array(
+        's3-1.s4-1.s5-1' => array(
+          's6-1.s7-1.is' => 'set',
+          's6-2.s7-2' => array(
+            'is' => 'set',
+            'array' => array(
+              'value' => 'here'
+            )
+          )
+        ),
+        's3-2.s4-2.s5-2' => array(
+          's6-1.s7-1.is' => 'set',
+          's6-2.s7-2' => array(
+            'is' => 'set',
+            'empty array' => array(),
+            'empty object' => $empty_object
+          )
+        )
+      )
+    );
+
+    $object1 = Stratan::create($value);
+
+    $object2 = new Stratan();
+    $object2->set('s1.s2.s3-1.s4-1.s5-1.s6-1.s7-1.is', 'already set');
+    $object2->set_defaults($value);
+
+    $expected1 = array(
+      's1' => array(
+        's2' => array(
+          's3-1' => array(
+            's4-1' => array(
+              's5-1' => array(
+                's6-1' => array(
+                  's7-1' => array(
+                    'is' => 'set'
+                  )
+                ),
+                's6-2' => array(
+                  's7-2' => array(
+                    'is' => 'set',
+                    'array' => array(
+                      'value' => 'here'
+                    )
+                  )
+                )
+              )
+            )
+          ),
+          's3-2' => array(
+            's4-2' => array(
+              's5-2' => array(
+                's6-1' => array(
+                  's7-1' => array(
+                    'is' => 'set'
+                  )
+                ),
+                's6-2' => array(
+                  's7-2' => array(
+                    'is' => 'set',
+                    'empty array' => array(),
+                    'empty object' => $empty_object
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    );
+
+    $expected2 = $expected1;
+    $expected2['s1']['s2']['s3-1']['s4-1']['s5-1']['s6-1']['s7-1']['is'] = 'already set';
+
+    $this->assertEquals($expected1, $object1->to_array());
+    $this->assertEquals($expected2, $object2->to_array());
   }
 }
