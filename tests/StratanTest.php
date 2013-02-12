@@ -156,7 +156,7 @@ class StratanTest extends PHPUnit_Framework_TestCase {
       )
     ));
 
-    $object->set_defaults(array(
+    $object->set_default(array(
       'default.value1.is' => 'set',
       'default.value2' => array(
         'is' => 'set'
@@ -318,7 +318,7 @@ class StratanTest extends PHPUnit_Framework_TestCase {
 
     $object2 = new Stratan();
     $object2->set('s1.s2.s3-1.s4-1.s5-1.s6-1.s7-1.is', 'already set');
-    $object2->set_defaults($value);
+    $object2->set_default($value);
 
     $expected1 = array(
       's1' => array(

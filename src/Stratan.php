@@ -122,12 +122,8 @@ class Stratan implements IteratorAggregate, ArrayAccess, Countable {
     return $this;
   }
 
-  public function set_default($key, $value) {
+  public function set_default($key, $value = null) {
     return $this->set($key, $value, true);
-  }
-
-  public function set_defaults(array $defaults) {
-    return $this->set($defaults, null, true);
   }
 
   public function delete($key) {
