@@ -316,10 +316,6 @@ class StratanTest extends PHPUnit_Framework_TestCase {
 
     $object1 = Stratan::create($value);
 
-    $object2 = new Stratan();
-    $object2->set('s1.s2.s3-1.s4-1.s5-1.s6-1.s7-1.is', 'already set');
-    $object2->set_default($value);
-
     $expected1 = array(
       's1' => array(
         's2' => array(
@@ -364,10 +360,79 @@ class StratanTest extends PHPUnit_Framework_TestCase {
       )
     );
 
+    $object2 = Stratan::create(array(
+        's1.s2.s3-1.s4-1.s5-1.s6-1.s7-1.is' => 'already set'
+      ))
+      ->set_default($value);
+
     $expected2 = $expected1;
     $expected2['s1']['s2']['s3-1']['s4-1']['s5-1']['s6-1']['s7-1']['is'] = 'already set';
 
+    $object3 = Stratan::create(
+      Stratan::create($value)
+        ->set_separator('/')
+        ->set('s1.s2/s3.is', 'set')
+    );
+
+    $expected3 = array_merge_recursive($expected1, array(
+      's1.s2' => array(
+        's3.is' => 'set'
+      )
+    ));
+
+    $object4 = Stratan::create($value)
+      ->set(array(
+        's1.s2.s3' => array(
+          'is' => 'set'
+        )
+      ));
+
+    $expected4 = array_merge_recursive($expected1, array(
+      's1' => array(
+        's2' => array(
+          's3' => array(
+            'is' => 'set'
+          )
+        )
+      )
+    ));
+
     $this->assertEquals($expected1, $object1->to_array());
     $this->assertEquals($expected2, $object2->to_array());
+    $this->assertEquals($expected3, $object3->to_array());
+    $this->assertEquals($expected4, $object4->to_array());
+  }
+
+  /**
+   * @test
+   */
+  public function should_set_recursive_when_key_is_null() {
+    $object = new Stratan();
+
+    $object[] = array(
+      's1.s2' => array(
+        's3.s4.s5' => array(
+          'is' => 'set'
+        )
+      )
+    );
+
+    $expected = array(
+      '0' => array(
+        's1' => array(
+          's2' => array(
+            's3' => array(
+              's4' => array(
+                's5' => array(
+                  'is' => 'set'
+                )
+              )
+            )
+          )
+        )
+      )
+    );
+
+    $this->assertEquals($expected, $object->to_array());
   }
 }

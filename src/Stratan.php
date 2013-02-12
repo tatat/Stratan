@@ -114,6 +114,11 @@ class Stratan implements IteratorAggregate, ArrayAccess, Countable {
     return $this;
   }
 
+  public function merge($value) {
+    $this->_merge($this->data, $value);
+    return $this;
+  }
+
   public function &data() {
     return $this->data;
   }
@@ -179,16 +184,26 @@ class Stratan implements IteratorAggregate, ArrayAccess, Countable {
 
   protected function _set($key, $value = null, $if_not_exist = false, $prefix = null) {
     if (is_null($key)) {
-      $this->data[] = $value;
-    } else if (is_array($key) || $key instanceof Stratan) {
+      if (is_array($value)) {
+        $this->data[] = static::create_array($value);
+      } else if ($value instanceof Stratan) {
+        $this->data[] = $value->to_array();
+      } else {
+        $this->data[] = $value;
+      }
+    } else if (is_array($key)) {
       foreach ($key as $k => $v)
         $this->_set($k, $v, $if_not_exist, $prefix);
+    } else if ($key instanceof Stratan) {
+      $this->merge($key->to_array());
     } else {
       if (!is_null($prefix))
         $key = $prefix . $this->separator . $key;
 
       if (is_array($value) && count($value) > 0) {
         $this->_set($value, null, $if_not_exist, $key);
+      } else if ($value instanceof Stratan) {
+        $this->merge($value->to_array());
       } else {
         $parent =& $this->get_parent_array($key, $last_ns, true);
 
@@ -200,5 +215,18 @@ class Stratan implements IteratorAggregate, ArrayAccess, Countable {
     }
 
     return $this;
+  }
+
+  protected function _merge(&$source, $item) {
+    foreach ($item as $key => $value) {
+      if (is_array($item[$key])) {
+        if (!array_key_exists($key, $source) || !is_array($source[$key]))
+          $source[$key] = array();
+
+        $this->_merge($source[$key], $item[$key]);
+      } else {
+        $source[$key] = $item[$key];
+      }
+    }
   }
 }
