@@ -96,7 +96,7 @@ class Stratan implements IteratorAggregate, ArrayAccess, Countable {
     return true;
   }
 
-  public function set($key, $value = null, $if_not_exist = false, $prefix = null) {
+  public function set($key, $value = null, $if_not_exist = false) {
     return $this->_set($key, $value, $if_not_exist);
   }
 
