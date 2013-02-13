@@ -308,6 +308,7 @@ class StratanTest extends PHPUnit_Framework_TestCase {
           's6-2.s7-2' => array(
             'is' => 'set',
             'empty array' => array(),
+            'not hash' => array('item1', 'item2', 'item3'),
             'empty object' => $empty_object
           )
         )
@@ -350,6 +351,7 @@ class StratanTest extends PHPUnit_Framework_TestCase {
                   's7-2' => array(
                     'is' => 'set',
                     'empty array' => array(),
+                    'not hash' => array('item1', 'item2', 'item3'),
                     'empty object' => $empty_object
                   )
                 )
@@ -475,6 +477,9 @@ class StratanTest extends PHPUnit_Framework_TestCase {
       's1-4.is' => 'set',
       'empty' => array(
         'array' => array()
+      ),
+      'this.is' => array(
+        'not.hash' => array('item1', 'item2', 'item3')
       )
     ));
 
@@ -485,7 +490,8 @@ class StratanTest extends PHPUnit_Framework_TestCase {
       's1-2.s2.s3.s4.s5-2.is' => 'set',
       's1-3.is' => 'set',
       's1-4.is' => 'set',
-      'empty.array' => array()
+      'empty.array' => array(),
+      'this.is.not.hash' => array('item1', 'item2', 'item3')
     );
 
     $this->assertEquals($expected, $object->flatten());
