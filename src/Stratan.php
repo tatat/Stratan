@@ -118,6 +118,10 @@ class Stratan implements IteratorAggregate, ArrayAccess, Countable {
     return $this;
   }
 
+  public function flatten() {
+    return $this->_flatten($result, $this->data);
+  }
+
   public function &data() {
     return $this->data;
   }
@@ -227,5 +231,20 @@ class Stratan implements IteratorAggregate, ArrayAccess, Countable {
         $source[$key] = $item[$key];
       }
     }
+  }
+
+  protected function _flatten(&$result = array(), $data, $prefix = null) {
+    foreach ($data as $key => $value) {
+      $current = is_null($prefix) ?
+        $key : $prefix . $this->separator . $key;
+
+      if (is_array($value) && count($value) > 0) {
+        $this->_flatten($result, $value, $current);
+      } else {
+        $result[$current] = $value;
+      }
+    }
+
+    return $result;
   }
 }

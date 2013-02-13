@@ -435,4 +435,59 @@ class StratanTest extends PHPUnit_Framework_TestCase {
 
     $this->assertEquals($expected, $object->to_array());
   }
+
+  /**
+   * @test
+   */
+  public function should_flatten() {
+    $object = Stratan::create(array(
+      's1-1' => array(
+        's2' => array(
+          's3' => array(
+            's4' => array(
+              's5-1' => array(
+                'is' => 'set'
+              ),
+              's5-2' => array(
+                'is' => 'set'
+              )
+            )
+          )
+        )
+      ),
+      's1-2' => array(
+        's2' => array(
+          's3' => array(
+            's4' => array(
+              's5-1' => array(
+                'is' => 'set'
+              ),
+              's5-2' => array(
+                'is' => 'set'
+              )
+            )
+          )
+        )
+      ),
+      's1-3' => array(
+        'is' => 'set'
+      ),
+      's1-4.is' => 'set',
+      'empty' => array(
+        'array' => array()
+      )
+    ));
+
+    $expected = array(
+      's1-1.s2.s3.s4.s5-1.is' => 'set',
+      's1-1.s2.s3.s4.s5-2.is' => 'set',
+      's1-2.s2.s3.s4.s5-1.is' => 'set',
+      's1-2.s2.s3.s4.s5-2.is' => 'set',
+      's1-3.is' => 'set',
+      's1-4.is' => 'set',
+      'empty.array' => array()
+    );
+
+    $this->assertEquals($expected, $object->flatten());
+  }
 }
