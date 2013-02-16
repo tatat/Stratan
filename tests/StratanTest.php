@@ -480,7 +480,32 @@ class StratanTest extends PHPUnit_Framework_TestCase {
       ),
       'this.is' => array(
         'not.hash' => array('item1', 'item2', 'item3')
-      )
+      ),
+      'this.is.recursive' => array(
+        array(
+          'value.is' => 'set'
+        ),
+        array(
+          'value.is' => 'set'
+        ),
+        array(
+          'value.is.empty.array' => array(),
+          'value.is.not.empty.array' => array('item1', 'item2', 'item3'),
+          'value.is.array' => array(
+            'contains.array' => array(
+              array(
+                array(
+                  array()
+                )
+              )
+            )
+          ),
+          'value.is.hash' => array(
+            'key' => 'value'
+          )
+        )
+      ),
+      'null' => null
     ));
 
     $expected = array(
@@ -491,9 +516,137 @@ class StratanTest extends PHPUnit_Framework_TestCase {
       's1-3.is' => 'set',
       's1-4.is' => 'set',
       'empty.array' => array(),
-      'this.is.not.hash' => array('item1', 'item2', 'item3')
+      'this.is.not.hash' => array('item1', 'item2', 'item3'),
+      'this.is.recursive.0.value.is' => 'set',
+      'this.is.recursive.1.value.is' => 'set',
+      'this.is.recursive.2.value.is.empty.array' => array(),
+      'this.is.recursive.2.value.is.not.empty.array' => array('item1', 'item2', 'item3'),
+      'this.is.recursive.2.value.is.array.contains.array.0.0.0' => array(),
+      'this.is.recursive.2.value.is.hash.key' => 'value',
+      'null' => null
     );
 
     $this->assertEquals($expected, $object->flatten());
+  }
+
+  /**
+   * @test
+   */
+  public function should_set_array() {
+    $object = Stratan::create(array(
+      'value.is.array' => array(
+        'empty' => array(),
+        'standard' => array(
+          'item1',
+          'item2',
+          'item3'
+        ),
+        'recursive' => array(
+          array(
+            'value1.is' => 'set',
+            'value2.is' => 'set',
+            'value3.is' => 'set'
+          ),
+          array(
+            'value1.is' => 'set',
+            'value2.is' => 'set',
+            'value3.is' => 'set'
+          )
+        ),
+        'hash' => array(
+          'value1.is' => 'set',
+          'value2.is' => 'set',
+          'value3.is' => 'set'
+        )
+      )
+    ));
+
+    $expected = array(
+      'value' => array(
+        'is' => array(
+          'array' => array(
+            'empty' => array(),
+            'standard' => array(
+              'item1',
+              'item2',
+              'item3'
+            ),
+            'recursive' => array(
+              array(
+                'value1' => array(
+                  'is' => 'set'
+                ),
+                'value2' => array(
+                  'is' => 'set'
+                ),
+                'value3' => array(
+                  'is' => 'set'
+                )
+              ),
+              array(
+                'value1' => array(
+                  'is' => 'set'
+                ),
+                'value2' => array(
+                  'is' => 'set'
+                ),
+                'value3' => array(
+                  'is' => 'set'
+                )
+              )
+            ),
+            'hash' => array(
+              'value1' => array(
+                'is' => 'set'
+              ),
+              'value2' => array(
+                'is' => 'set'
+              ),
+              'value3' => array(
+                'is' => 'set'
+              )
+            )
+          )
+        )
+      )
+    );
+
+    $expected_empty = array();
+
+    $expected_standard = array(
+      'item1',
+      'item2',
+      'item3'
+    );
+
+    $expected_recursive = array(
+      array(
+        'value1' => array(
+          'is' => 'set'
+        ),
+        'value2' => array(
+          'is' => 'set'
+        ),
+        'value3' => array(
+          'is' => 'set'
+        )
+      ),
+      array(
+        'value1' => array(
+          'is' => 'set'
+        ),
+        'value2' => array(
+          'is' => 'set'
+        ),
+        'value3' => array(
+          'is' => 'set'
+        )
+      )
+    );
+
+    $this->assertEquals($expected, $object->to_array());
+    $this->assertEquals($expected_empty, $object->get('value.is.array.empty')->to_array());
+    $this->assertEquals($expected_standard, $object->get('value.is.array.standard')->to_array());
+    $this->assertEquals($expected_recursive, $object->get('value.is.array.recursive')->to_array());
   }
 }

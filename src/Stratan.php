@@ -80,7 +80,7 @@ class Stratan implements IteratorAggregate, ArrayAccess, Countable {
     $parent =& $this->get_parent_array($key, $last_ns);
 
     if (!is_null($parent) && array_key_exists($last_ns, $parent)) {
-      return $this->is_hash($parent[$last_ns]) ? new static($parent[$last_ns], $this->separator, $this->json_options) : $parent[$last_ns];
+      return is_array($parent[$last_ns]) ? new static($parent[$last_ns], $this->separator, $this->json_options) : $parent[$last_ns];
     } else {
       return $default;
     }
@@ -186,14 +186,20 @@ class Stratan implements IteratorAggregate, ArrayAccess, Countable {
   }
 
   protected function is_hash($array) {
-    if (!is_array($array))
-      return false;
-
     $i = 0;
 
     foreach($array as $key => $value)
       if ($key !== $i++)
         return true;
+
+    return false;
+  }
+
+  protected function has_array($array) {
+    foreach ($array as $value) {
+      if (is_array($value))
+        return true;
+    }
 
     return false;
   }
@@ -216,7 +222,7 @@ class Stratan implements IteratorAggregate, ArrayAccess, Countable {
       if (!is_null($prefix))
         $key = $prefix . $this->separator . $key;
 
-      if ($this->is_hash($value)) {
+      if (is_array($value) && count($value) > 0) {
         $this->_set($value, null, $if_not_exist, $key);
       } else if ($value instanceof Stratan) {
         $this->merge($value->to_array());
@@ -251,7 +257,14 @@ class Stratan implements IteratorAggregate, ArrayAccess, Countable {
       $current = is_null($prefix) ?
         $key : $prefix . $this->separator . $key;
 
-      if ($this->is_hash($value)) {
+      if (
+        is_array($value) &&
+        !empty($value) &&
+        (
+          $this->is_hash($value) ||
+          $this->has_array($value)
+        )
+      ) {
         $this->_flatten($result, $value, $current);
       } else {
         $result[$current] = $value;
